@@ -195,7 +195,7 @@ code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.86em
 .productheader .name { font-size: 34px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; line-height: 1; }
 .productheader nav ul { display: flex; align-items: center; gap: 4px 26px; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
 .productheader nav a { color: var(--text); font-size: 15px; }
-.productheader nav .aqua { min-height: 30px; padding: 0 14px; font-size: 14px; border-radius: 15px; }
+.productheader nav .aqua { min-height: 30px; padding: 0 14px; font-size: 14px; border-radius: 15px; color: #fff; }
 
 @media (max-width: 760px) {
   .productheader nav li:not(:last-child) { display: none; }
