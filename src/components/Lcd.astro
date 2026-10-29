@@ -1,0 +1,64 @@
+---
+// The iTunes LCD: a cream (or backlit, in dark mode) display. The second line alternates
+// between `lines`, the way iTunes 8 alternated artist and album.
+interface Props {
+  title: string;
+  lines: string[];
+}
+
+const { title, lines } = Astro.props;
+---
+<div class="lcd" role="group" aria-label="Latest version">
+  <p class="title" data-lcd-title>{title}</p>
+  <p class="lines" data-count={lines.length}>
+    {lines.map((line, i) => <span data-lcd-line={i}>{line}</span>)}
+  </p>
+</div>
+
+<style>
+  .lcd {
+    position: relative;
+    padding: 12px 14px 13px;
+    border: 1px solid var(--lcd-edge);
+    border-radius: 8px;
+    text-align: center;
+    color: var(--lcd-ink);
+    background:
+      linear-gradient(rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.06) 50%, transparent 50%),
+      linear-gradient(var(--lcd-top), var(--lcd-bottom));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.7),
+      inset 0 0 0 1px rgb(149 152 133 / 0.8),
+      inset 0 2px 5px rgb(0 0 0 / 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    .lcd {
+      background:
+        linear-gradient(rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.01) 50%, transparent 50%),
+        linear-gradient(var(--lcd-top), var(--lcd-bottom));
+      box-shadow: 0 1px 0 rgb(255 255 255 / 0.08), inset 0 0 0 1px rgb(0 0 0 / 0.5), inset 0 2px 6px rgb(0 0 0 / 0.5);
+    }
+  }
+  .title {
+    font-size: 19px; font-weight: 600; line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+  }
+  .lines {
+    display: grid; margin-top: 2px;
+    font-size: 15px; line-height: 1.35; color: var(--lcd-muted);
+  }
+  .lines span { grid-area: 1 / 1; }
+
+  /* Two lines take turns, 4 s each, with a short crossfade. */
+  .lines[data-count='2'] span { animation: lcd-swap 8s infinite both; }
+  .lines[data-count='2'] span:nth-child(2) { animation-delay: -4s; }
+  @keyframes lcd-swap {
+    0%, 45% { opacity: 1; }
+    50%, 95% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lines[data-count='2'] span { animation: none; }
+    .lines[data-count='2'] span:nth-child(2) { display: none; }
+  }
+</style>

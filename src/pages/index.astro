@@ -1,0 +1,584 @@
+---
+import Base from '../layouts/Base.astro';
+import Lcd from '../components/Lcd.astro';
+import Shot from '../components/Shot.astro';
+import { Image } from 'astro:assets';
+import { fetchReleases, formatDate, formatSize, RELEASES_URL, STABLE_DMG_URL } from '../lib/releases';
+
+import icon from '../assets/icon.png';
+import gridLight from '../assets/shots/grid-light.webp';
+import gridDark from '../assets/shots/grid-dark.webp';
+import coverflowLight from '../assets/shots/coverflow-light.webp';
+import coverflowDark from '../assets/shots/coverflow-dark.webp';
+import geniusLight from '../assets/shots/genius-light.webp';
+import geniusDark from '../assets/shots/genius-dark.webp';
+import visualizer from '../assets/shots/visualizer-light.webp';
+import eqLight from '../assets/shots/eq-light.webp';
+import eqDark from '../assets/shots/eq-dark.webp';
+import miniLight from '../assets/shots/mini-light.webp';
+import miniDark from '../assets/shots/mini-dark.webp';
+import dmgWindow from '../assets/install/dmg-window.webp';
+import notOpened from '../assets/install/not-opened.webp';
+import privacySecurity from '../assets/install/privacy-security.webp';
+import openAnyway from '../assets/install/open-anyway-confirm.webp';
+
+const releases = await fetchReleases(3);
+const latest = releases[0];
+const dmgUrl = latest?.dmgUrl ?? STABLE_DMG_URL;
+const size = formatSize(latest?.dmgBytes ?? null);
+
+const lcdTitle = latest ? `neueTunes ${latest.version}` : 'neueTunes';
+const lcdLines = latest
+  ? [`Released ${formatDate(latest.date)}`, size ? `Free download, ${size}` : 'Free download']
+  : ['Free download for Mac'];
+
+const browse = [
+  { id: 'coverflow', label: 'Cover Flow', light: coverflowLight, dark: coverflowDark,
+    alt: 'neueTunes in Cover Flow: album covers in a row with reflections above the song list.' },
+  { id: 'grid', label: 'Grid View', light: gridLight, dark: gridDark,
+    alt: 'neueTunes in Grid View: the library as a grid of album covers.' },
+];
+
+const formats = [
+  { kind: 'files', title: 'Your music files', text: 'MP3, AAC, Apple Lossless, FLAC, WAV, and AIFF, from anywhere on your Mac.' },
+  { kind: 'disc', title: 'The unusual ones', text: 'Opus, Ogg Vorbis, Speex, WavPack, Monkey’s Audio, Musepack, TTA, and DSD.' },
+  { kind: 'plex', title: 'Plex', text: 'Stream your Plex music libraries, rate songs, and download them for when you’re offline.' },
+  { kind: 'lastfm', title: 'Last.fm', text: 'Scrobbles what you play, and helps Genius find music that goes together.' },
+];
+
+const more = [
+  { title: 'Smart Playlists', text: 'Playlists that fill themselves from rules, like songs added this month or rated four stars and up.' },
+  { title: 'neueTunes DJ', text: 'Picks what plays next from a playlist or your whole library, plays higher-rated songs more often, and takes requests.' },
+  { title: 'Get Info', text: 'Edit names, artwork, and the rest. Your changes are written back into the files.' },
+  { title: 'Plex, offline', text: 'Download albums and playlists from Plex. Plays and ratings sync back when the server is in reach again.' },
+  { title: 'Light and dark', text: 'A graphite skin for each, following your Mac’s appearance setting.' },
+  { title: 'Updates itself', text: 'New versions install from inside the app, through neueTunes ▸ Check for Updates.' },
+];
+
+const steps = [
+  { title: 'Drag neueTunes into Applications', image: dmgWindow, alt: 'The neueTunes installer window: the app icon, an arrow, and the Applications folder.',
+    text: 'Open the downloaded DMG and drag the neueTunes icon onto the Applications folder.' },
+  { title: 'Open it, then click Done', image: notOpened, alt: 'The macOS alert “neueTunes” Not Opened, with Move to Trash and Done buttons.',
+    text: 'macOS says “neueTunes” Not Opened. Click Done. Don’t click Move to Trash, even though it’s the blue button: it deletes the app.' },
+  { title: 'Allow it in System Settings', image: privacySecurity, alt: 'System Settings, Privacy & Security, with an Open Anyway button next to “neueTunes” was blocked.',
+    text: 'In System Settings, click Privacy & Security, scroll down to Security, and click Open Anyway next to “neueTunes” was blocked. The button stays for about an hour after step 2.' },
+  { title: 'Confirm with Open Anyway', image: openAnyway, alt: 'The macOS alert Open “neueTunes”?, with Move to Trash, Open Anyway, and Done buttons.',
+    text: 'Click Open Anyway (again, not the blue button) and enter your password or use Touch ID. neueTunes opens, and from now on it opens like any other app.' },
+];
+
+const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music files and Plex libraries, with Cover Flow, Genius, and the visualizer. Free download for macOS 26 or later.';
+---
+<Base title="neueTunes: Download" description={description}>
+  <header class="wrap">
+    <nav class="globalnav" aria-label="Site">
+      <ul>
+        <li class="home"><a href="#top" aria-label="neueTunes home"><Image src={icon} alt="" width={48} height={48} /></a></li>
+        <li><a href="#top" aria-current="page">Download</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#releases">Release Notes</a></li>
+        <li><a href="#install">Installing</a></li>
+        <li><a href={RELEASES_URL}>GitHub</a></li>
+      </ul>
+    </nav>
+
+    <div class="productheader" id="top">
+      <p class="name">neueTunes</p>
+      <nav aria-label="On this page">
+        <ul>
+          <li><a href="#features">What’s in it</a></li>
+          <li><a href="#releases">What’s changed</a></li>
+          <li><a href="#install">Opening it the first time</a></li>
+          <li><a class="aqua" href={dmgUrl} data-dmg>Download</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap panel hero" aria-labelledby="hero-title">
+      <aside class="download">
+        <Lcd title={lcdTitle} lines={lcdLines} />
+        <a class="aqua big" href={dmgUrl} data-dmg>
+          Download Now
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#fff" /><path d="M10 4.5v8M6.2 9.2 10 13l3.8-3.8" fill="none" stroke="#1d63cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </a>
+        <p class="fine">A disk image for Mac. Open it and drag neueTunes into Applications.</p>
+
+        <h2>System requirements</h2>
+        <ul class="reqs">
+          <li>macOS 26 or later</li>
+          <li>A Mac with Apple silicon or an Intel processor</li>
+          <li>Music files, a Plex server, or both</li>
+        </ul>
+
+        <h2>The first time you open it</h2>
+        <p>macOS asks you to allow apps from outside the App Store. <a href="#install">Here’s how</a>, step by step. After that, neueTunes updates itself.</p>
+
+        <p class="more-links"><a href={RELEASES_URL}>All versions on GitHub</a></p>
+      </aside>
+
+      <div class="hero-main">
+        <h1 id="hero-title">Download<br />neueTunes</h1>
+        <p class="lead">iTunes 8, rebuilt for the Mac you have now. Your music files and your Plex libraries in one window, with Cover Flow, Genius, and the visualizer right where you left them.</p>
+        <Shot class="shot hero-shot" light={gridLight} dark={gridDark} loading="eager" sizes="(min-width: 1100px) 700px, 92vw"
+          alt="The neueTunes window in Grid View: graphite toolbar with the LCD, the source list, and a grid of album covers." />
+      </div>
+
+      <div class="intro">
+          <div>
+            <h2>What is neueTunes?</h2>
+            <h3>The iTunes you remember.</h3>
+            <p>A new Mac app modeled closely on iTunes 8 from 2008: the graphite window, the LCD, the source list, Cover Flow. Redrawn sharp for Retina screens, with a dark skin for when your Mac is in dark mode.</p>
+            <h3>Your files and your Plex.</h3>
+            <p>Add songs and folders from your Mac, and sign in to Plex. Each Plex music library shows up under Shared, the way friends’ libraries did in iTunes.</p>
+            <h3>Music, and nothing else.</h3>
+            <p>No store, no video, no podcasts, and no account to make. It plays your music.</p>
+          </div>
+          <div>
+            <h2>What does it play?</h2>
+            <ul class="formats">
+              {formats.map((f) => (
+                <li class={f.kind}>
+                  <span class="glyph" aria-hidden="true">
+                    {f.kind === 'files' && <Image src={icon} alt="" width={64} height={64} />}
+                  </span>
+                  <div><h3>{f.title}</h3><p>{f.text}</p></div>
+                </li>
+              ))}
+            </ul>
+          </div>
+      </div>
+    </section>
+
+    <section class="wrap panel features" id="features" aria-labelledby="features-title">
+      <div class="ribbon" aria-hidden="true"><span>New</span></div>
+      <header class="section-head">
+        <h2 id="features-title">What’s in neueTunes</h2>
+        <p>Everything that made iTunes 8 good, on a Mac from this decade.</p>
+      </header>
+
+      <article class="row">
+        <div class="copy">
+          <h3>Cover Flow and Grid View</h3>
+          <p>Flip through your albums by their covers in Cover Flow, or go full screen with it. Grid View shows the whole library at once, by album, artist, genre, or composer.</p>
+          <p>The song list is always one click away, with the column browser, sorting by any column, and search that filters as you type.</p>
+          <div class="gallery" role="group" aria-label="Choose a view">
+            {browse.map((b, i) => (
+              <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} aria-controls={`browse-${b.id}`} data-view={b.id}>
+                <Shot light={b.light} dark={b.dark} alt="" sizes="150px" widths={[320, 480]} />
+                <span>{b.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div class="media stack">
+          {browse.map((b, i) => (
+            <div id={`browse-${b.id}`} class="view" hidden={i !== 0}>
+              <Shot class="shot" light={b.light} dark={b.dark} alt={b.alt} sizes="(min-width: 1100px) 620px, 92vw" />
+            </div>
+          ))}
+        </div>
+      </article>
+
+      <article class="row flip">
+        <div class="copy">
+          <h3>Genius, without the iTunes Store</h3>
+          <p>Play a song, click the Genius button, and neueTunes makes a playlist of songs from your libraries that go great with it. Change its length, refresh it, or save it as a playlist.</p>
+          <p>To work out what goes together, it listens to your songs on your Mac and reads your listening history, Last.fm, and your Plex servers. The Genius sidebar shows the artist’s top albums, songs of theirs you only have on Plex, and other artists to try.</p>
+          <p class="note">Genius is off until you turn it on in the Advanced menu.</p>
+        </div>
+        <div class="media">
+          <Shot class="shot" light={geniusLight} dark={geniusDark} sizes="(min-width: 1100px) 620px, 92vw"
+            alt="A Genius playlist of 24 songs based on one song, with the Genius sidebar listing albums and songs by the same artist." />
+        </div>
+      </article>
+
+      <article class="row">
+        <div class="copy">
+          <h3>A new visualizer</h3>
+          <p>Press <kbd>⌘T</kbd> and your music becomes glowing orbs trailing ribbons of light, pushed around by the bass, mids, and treble. <kbd>⌘F</kbd> takes it full screen.</p>
+          <p>It runs at your display’s refresh rate, even in 5K.</p>
+        </div>
+        <div class="media">
+          <Shot class="shot" light={visualizer} sizes="(min-width: 1100px) 620px, 92vw"
+            alt="The visualizer filling the neueTunes window: bright orbs and streaks of particles on a dark blue background." />
+        </div>
+      </article>
+
+      <article class="row flip">
+        <div class="copy">
+          <h3>Mini player and Equalizer</h3>
+          <p>Shrink neueTunes to the mini player and keep it on screen while you work.</p>
+          <p>The 10-band equalizer has presets and a preamp, and Playback settings add crossfades, gapless playback, and Sound Check for even volume.</p>
+        </div>
+        <div class="media duo">
+          <Shot class="shot" light={miniLight} dark={miniDark} sizes="330px" widths={[330, 660]}
+            alt="The mini player: playback buttons, volume, and an LCD showing the current song." />
+          <Shot class="shot" light={eqLight} dark={eqDark} sizes="379px" widths={[379, 758]}
+            alt="The Equalizer window: a preamp slider, ten band sliders from 32 Hz to 16 kHz, and a preset menu." />
+        </div>
+      </article>
+
+      <div class="more">
+        <h3 class="more-title">And a few more things</h3>
+        <ul>
+          {more.map((m) => <li><h4>{m.title}</h4><p>{m.text}</p></li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="wrap band" id="releases" aria-labelledby="releases-title">
+      <header>
+        <h2 id="releases-title">neueTunes release notes</h2>
+        <a href={RELEASES_URL}>All releases on GitHub</a>
+      </header>
+      {releases.length > 0 ? (
+        <ol class="cards">
+          {releases.map((r, i) => (
+            <li>
+              <h3><a href={r.url}>neueTunes {r.version}</a>{i === 0 && <span class="badge">Latest</span>}</h3>
+              <p class="date"><time datetime={r.date}>{formatDate(r.date)}</time></p>
+              <ul>{r.notes.map((n) => <li>{n}</li>)}</ul>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="empty">Release notes for every version are on <a href={RELEASES_URL}>GitHub</a>.</p>
+      )}
+    </section>
+
+    <section class="wrap panel install" id="install" aria-labelledby="install-title">
+      <header class="section-head">
+        <h2 id="install-title">Opening neueTunes the first time</h2>
+        <p>neueTunes doesn’t come from the App Store, so macOS blocks it the first time you open it. Allowing it takes a minute, and you only do it once.</p>
+      </header>
+      <ol class="steps">
+        {steps.map((s, i) => (
+          <li>
+            <div class="step-media"><Image src={s.image} alt={s.alt} widths={[400, 800]} sizes="(min-width: 1100px) 230px, 45vw" /></div>
+            <h3><span class="num" aria-hidden="true">{i + 1}</span>{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="terminal">Comfortable with Terminal? After step 1, this one command replaces steps 2 to 4: <code>xattr -dr com.apple.quarantine /Applications/neueTunes.app</code></p>
+    </section>
+
+    <section class="wrap panel promo" aria-label="Download">
+      <Image src={icon} alt="" width={96} height={96} />
+      <div>
+        <p class="promo-name">neueTunes <span data-version>{latest?.version}</span></p>
+        <p>Free for Mac. macOS 26 or later.</p>
+      </div>
+      <a class="aqua big" href={dmgUrl} data-dmg>
+        Download
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#fff" /><path d="M10 4.5v8M6.2 9.2 10 13l3.8-3.8" fill="none" stroke="#1d63cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </section>
+  </main>
+
+  <footer class="wrap sitefooter">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="#top"><Image src={icon} alt="neueTunes" width={36} height={36} /></a>
+      <span>neueTunes</span>
+      <span aria-current="page">Download</span>
+    </nav>
+    <p>neueTunes is a personal project. It isn’t made, endorsed, or supported by Apple. iTunes and Cover Flow are trademarks of Apple Inc. Album artwork in the screenshots belongs to its artists.</p>
+  </footer>
+</Base>
+
+<script>
+  import { STABLE_DMG, STABLE_DMG_URL, REPO } from '../lib/releases';
+
+  // Browse gallery: the thumbnails switch the big screenshot, like apple.com's galleries did.
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.gallery button');
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      buttons.forEach((b) => {
+        const on = b === button;
+        b.setAttribute('aria-pressed', String(on));
+        document.getElementById(b.getAttribute('aria-controls')!)!.hidden = !on;
+      });
+    });
+  });
+
+  // A release made after this deploy: point the buttons and the LCD at it.
+  fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } })
+    .then((res) => (res.ok ? res.json() : null))
+    .then((release) => {
+      if (!release) return;
+      const version = String(release.tag_name).replace(/^v/, '');
+      const title = document.querySelector('[data-lcd-title]');
+      if (!title || title.textContent === `neueTunes ${version}`) return;
+      const assets: { name: string; size: number; browser_download_url: string }[] = release.assets ?? [];
+      const stable = assets.find((a) => a.name === STABLE_DMG);
+      const dmg = stable ?? assets.find((a) => a.name.endsWith('.dmg'));
+      if (!dmg) return;
+      const url = stable ? STABLE_DMG_URL : dmg.browser_download_url;
+      document.querySelectorAll<HTMLAnchorElement>('[data-dmg]').forEach((a) => (a.href = url));
+      document.querySelectorAll('[data-version]').forEach((el) => (el.textContent = version));
+      title.textContent = `neueTunes ${version}`;
+      const date = new Date(release.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+      const lines = document.querySelectorAll('[data-lcd-line]');
+      if (lines[0]) lines[0].textContent = `Released ${date}`;
+      if (lines[1]) lines[1].textContent = `Free download, ${Math.round(dmg.size / 1_000_000)} MB`;
+    })
+    .catch(() => {});
+</script>
+
+<style>
+  main { display: grid; gap: 28px; }
+
+  /* ---------- Hero: the 2008 Download page, download box on the left ---------- */
+
+  .hero {
+    display: grid; grid-template-columns: 300px 1fr; grid-template-rows: auto 1fr;
+    overflow: hidden;
+  }
+  .download {
+    grid-row: 1 / span 2;
+    padding: 34px 26px 30px;
+    border-right: 1px solid var(--panel-rule);
+    font-size: 15px;
+  }
+  .download .aqua.big { width: 100%; margin-top: 18px; }
+  .download .fine { margin-top: 10px; color: var(--muted); font-size: 14px; }
+  .download h2 { margin-top: 30px; font-size: 15px; }
+  .download h2 + * { margin-top: 6px; }
+  .reqs { margin: 0; padding-left: 1.1em; }
+  .reqs li + li { margin-top: 2px; }
+  .more-links { margin-top: 26px; }
+
+  .aqua.big { min-height: 52px; font-size: 21px; border-radius: 9px; }
+
+  .hero-main { padding: 46px 40px 0 44px; min-width: 0; }
+  .hero h1 { font-size: clamp(44px, 6vw, 64px); font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+  .lead { margin-top: 20px; max-width: 28em; font-size: 21px; line-height: 1.45; color: var(--muted); font-weight: 400; }
+  .hero-main :global(.hero-shot) { margin: 34px -8px 0 0; }
+
+  main :global(.shot img) { filter: var(--shot-shadow); }
+
+  .intro {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-content: start;
+    padding: 44px 40px 40px 44px; font-size: 15px;
+  }
+  .intro h2 { font-size: 22px; font-weight: 600; margin-bottom: 14px; }
+  .intro h3 { font-size: 15px; margin-top: 16px; }
+  .intro h2 + h3 { margin-top: 0; }
+  .intro p { color: var(--text); }
+
+  .formats { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .formats li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+  .formats h3 { margin: 0; }
+  .glyph {
+    width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5), 0 1px 2px rgb(0 0 0 / 0.25);
+  }
+  .files .glyph { box-shadow: none; }
+  .files .glyph img { width: 34px; height: 34px; }
+  .disc .glyph {
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, #e9e9e9 0 3px, #9a9a9a 3.5px 4.5px, transparent 5px),
+      conic-gradient(from 20deg, #d8d8d8, #f6d2e6, #cfe6f7, #f5f1c8, #d8d8d8, #c9e8d4, #e6d1f3, #d8d8d8);
+  }
+  .plex .glyph { background: linear-gradient(#f5b335, #e5a00d); }
+  .plex .glyph::before {
+    content: ''; width: 9px; height: 9px; margin-left: -4px;
+    border: solid #fff; border-width: 3px 3px 0 0; transform: rotate(45deg);
+  }
+  .lastfm .glyph { background: linear-gradient(#e8333c, #b90000); }
+  .lastfm .glyph::before {
+    content: ''; width: 18px; height: 12px;
+    background: linear-gradient(#fff, #fff) 0 100% / 3px 5px no-repeat,
+      linear-gradient(#fff, #fff) 5px 100% / 3px 12px no-repeat,
+      linear-gradient(#fff, #fff) 10px 100% / 3px 8px no-repeat,
+      linear-gradient(#fff, #fff) 15px 100% / 3px 10px no-repeat;
+  }
+
+  /* ---------- Features: the "What’s new in iTunes 8" page ---------- */
+
+  .features { padding: 56px 64px 44px; overflow: hidden; }
+  .ribbon {
+    position: absolute; top: 0; left: 0; width: 120px; height: 120px; overflow: hidden;
+    border-top-left-radius: 6px;
+  }
+  .ribbon span {
+    position: absolute; top: 26px; left: -40px; width: 170px; padding: 4px 0;
+    transform: rotate(-45deg);
+    text-align: center; color: #fff; font-size: 22px; font-weight: 600; font-style: italic;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 0.3);
+    background: linear-gradient(var(--ribbon-top), var(--ribbon-bottom));
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.25);
+  }
+
+  .section-head { text-align: center; max-width: 40em; margin: 0 auto; }
+  .section-head h2 { font-size: clamp(34px, 4.6vw, 48px); font-weight: 400; letter-spacing: -0.015em; line-height: 1.1; }
+  .section-head p { margin-top: 10px; font-size: 20px; color: var(--muted); }
+
+  .row {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr); gap: 48px; align-items: center;
+    margin-top: 72px;
+  }
+  .row.flip { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); }
+  .row.flip .copy { order: 2; }
+  .row h3 { font-size: 24px; margin-bottom: 10px; }
+  .row .copy { max-width: var(--measure); font-size: 16px; }
+  .note { color: var(--muted); font-size: 15px; }
+
+  .stack { display: grid; }
+  .stack .view { grid-area: 1 / 1; }
+  .stack .view:not([hidden]) { animation: view-in 0.35s ease-out; }
+  @keyframes view-in { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .stack .view:not([hidden]) { animation: none; } }
+
+  .gallery {
+    display: flex; gap: 12px; margin-top: 22px; padding: 12px;
+    border: 1px solid var(--panel-rule); border-radius: 6px;
+    background: linear-gradient(var(--panel), var(--panel-shade));
+  }
+  .gallery button {
+    flex: 1; padding: 0; border: 0; background: none; cursor: pointer;
+    font: inherit; font-size: 14px; color: var(--muted); text-align: center;
+  }
+  .gallery button :global(picture) {
+    border-radius: 4px; overflow: hidden; outline: 2px solid transparent; outline-offset: 2px;
+  }
+  .gallery button[aria-pressed='true'] { color: var(--ink); font-weight: 600; }
+  .gallery button[aria-pressed='true'] :global(picture) { outline-color: #3d8ff0; }
+  .gallery button span { display: block; margin-top: 6px; }
+
+  .duo { display: grid; justify-items: center; gap: 32px; }
+  .duo :global(picture:first-child) { width: min(330px, 100%); }
+  .duo :global(picture:last-child) { width: min(379px, 100%); }
+
+  .more { margin-top: 80px; padding-top: 34px; border-top: 1px solid var(--panel-rule); }
+  .more-title { font-size: 24px; text-align: center; }
+  .more ul {
+    list-style: none; margin: 26px 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px 40px;
+    font-size: 15px;
+  }
+  .more h4 { font-size: 16px; margin-bottom: 4px; }
+
+  /* ---------- Release notes: the dark "iTunes this week" band ---------- */
+
+  .band {
+    padding: 0 0 26px; border-radius: 6px; overflow: hidden;
+    background: var(--band); color: var(--band-text);
+    box-shadow: 0 8px 18px -12px rgb(0 0 0 / 0.5);
+  }
+  .band header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 12px 26px;
+    background: linear-gradient(#7a7a7a, #5d5d5d 50%, #4f4f4f);
+    border-bottom: 1px solid #2c2c2c;
+  }
+  .band h2 { color: #fff; font-size: 26px; font-weight: 300; text-shadow: 0 -1px 0 rgb(0 0 0 / 0.4); }
+  .band header a { color: #fff; font-size: 14px; font-weight: 600; }
+  .band a { color: #fff; }
+  .cards {
+    list-style: none; margin: 0; padding: 22px 26px 0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+  }
+  .cards > li {
+    padding: 16px 18px 18px; border-radius: 5px;
+    background: var(--band-card); border: 1px solid rgb(0 0 0 / 0.35);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+    font-size: 15px;
+  }
+  .cards h3 { color: #fff; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .badge {
+    padding: 1px 8px; border-radius: 9px; font-size: 12px; font-weight: 600;
+    background: linear-gradient(var(--ribbon-top), var(--ribbon-bottom)); color: #fff;
+  }
+  .date { color: var(--band-muted); font-size: 14px; margin-top: 2px; }
+  .cards ul { margin: 12px 0 0; padding-left: 1.1em; list-style: disc; }
+  .cards ul li + li { margin-top: 4px; }
+  .empty { padding: 22px 26px 0; }
+
+  /* ---------- Install steps ---------- */
+
+  .install { padding: 50px 56px 40px; }
+  .install .section-head h2 { font-size: clamp(30px, 3.6vw, 38px); }
+  .install .section-head p { font-size: 18px; }
+  .steps {
+    list-style: none; margin: 40px 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+    font-size: 15px;
+  }
+  .step-media {
+    display: grid; place-items: center; height: 200px; margin-bottom: 16px; padding: 10px;
+    border-radius: 6px; background: linear-gradient(var(--panel-shade), var(--panel));
+    border: 1px solid var(--panel-rule);
+  }
+  .step-media img { max-height: 180px; width: auto; border-radius: 6px; box-shadow: 0 4px 12px rgb(0 0 0 / 0.2); }
+  .steps h3 { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; margin-bottom: 6px; }
+  .num {
+    flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--aqua-edge); color: #fff; font-size: 15px; font-weight: 700;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 0.3);
+    background:
+      linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.15) 50%, transparent 50%),
+      linear-gradient(var(--aqua-top), var(--aqua-mid) 48%, var(--aqua-bottom));
+  }
+  .terminal { margin-top: 30px; font-size: 15px; color: var(--muted); text-align: center; }
+  .terminal code {
+    display: inline-block; margin-top: 6px; padding: 3px 8px; border-radius: 4px;
+    background: var(--panel-shade); border: 1px solid var(--panel-rule); color: var(--text);
+    user-select: all;
+  }
+
+  /* ---------- Promo strip and footer ---------- */
+
+  .promo {
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    padding: 20px 28px;
+    background: linear-gradient(var(--panel), var(--panel-shade));
+  }
+  .promo > img { width: 72px; height: 72px; }
+  .promo > div { flex: 1; min-width: 12em; color: var(--muted); }
+  .promo-name { font-size: 30px; font-weight: 300; color: var(--ink); line-height: 1.1; }
+  .promo .aqua.big { padding: 0 1.4em; }
+
+  .sitefooter { margin-top: 28px; padding-bottom: 40px; font-size: 13px; color: var(--muted); }
+  .crumbs {
+    display: flex; align-items: center; min-height: 40px; margin-bottom: 14px;
+    border: 1px solid var(--panel-rule); border-radius: 5px;
+    background: linear-gradient(var(--panel), var(--panel-shade));
+    font-weight: 600; color: var(--text);
+  }
+  .crumbs > * { display: flex; align-items: center; height: 40px; padding: 0 16px 0 22px; position: relative; }
+  .crumbs > a { padding-left: 12px; }
+  .crumbs img { width: 22px; height: 22px; }
+  .crumbs > * + *::before {
+    content: ''; position: absolute; left: -8px; top: 9px; width: 20px; height: 20px;
+    border: solid var(--panel-rule); border-width: 1px 1px 0 0; transform: rotate(45deg) skew(10deg, 10deg);
+  }
+  .crumbs [aria-current] { color: var(--muted); font-weight: 400; }
+  .sitefooter p { max-width: 60em; }
+
+  /* ---------- Smaller screens ---------- */
+
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; }
+    .download { order: 1; grid-row: auto; border-right: 0; border-block: 1px solid var(--panel-rule); margin-top: 32px; }
+    .hero-main { padding: 34px 24px 0; }
+    .intro { order: 2; padding: 34px 24px 32px; }
+    .hero-main :global(.hero-shot) { margin-right: 0; }
+    .row, .row.flip { grid-template-columns: 1fr; gap: 26px; margin-top: 56px; }
+    .row.flip .copy { order: 0; }
+    .row .copy { max-width: none; }
+    .features { padding: 64px 24px 36px; }
+    .more ul { grid-template-columns: 1fr 1fr; }
+    .cards { grid-template-columns: 1fr; }
+    .install { padding: 40px 24px 32px; }
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 620px) {
+    .intro { grid-template-columns: 1fr; }
+    .more ul, .steps { grid-template-columns: 1fr; }
+    .lead { font-size: 19px; }
+    .ribbon { transform: scale(0.8); transform-origin: 0 0; }
+  }
+</style>
