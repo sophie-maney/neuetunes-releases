@@ -4,7 +4,8 @@
 
 export const REPO = 'sophie-maney/neuetunes-releases';
 export const RELEASES_URL = `https://github.com/${REPO}/releases`;
-// scripts/release.sh in the app repo uploads every DMG a second time under this name.
+// scripts/release.sh in the app repo uploads every DMG a second time under this name, so the
+// download buttons always point at the latest release's copy.
 export const STABLE_DMG = 'neueTunes.dmg';
 export const STABLE_DMG_URL = `${RELEASES_URL}/latest/download/${STABLE_DMG}`;
 
@@ -13,7 +14,6 @@ export interface Release {
   date: string;
   url: string;
   notes: string[];
-  dmgUrl: string;
   dmgBytes: number | null;
 }
 
@@ -29,9 +29,7 @@ interface GitHubRelease {
 }
 
 export function toRelease(r: GitHubRelease): Release {
-  const dmgs = r.assets.filter((a) => a.name.endsWith('.dmg'));
-  const stable = dmgs.find((a) => a.name === STABLE_DMG);
-  const dmg = stable ?? dmgs[0];
+  const dmg = r.assets.find((a) => a.name === STABLE_DMG) ?? r.assets.find((a) => a.name.endsWith('.dmg'));
   return {
     version: r.tag_name.replace(/^v/, ''),
     date: r.published_at,
@@ -41,7 +39,6 @@ export function toRelease(r: GitHubRelease): Release {
       .split('\n')
       .filter((line) => /^\s*[-*] /.test(line))
       .map((line) => line.replace(/^\s*[-*] /, '').trim()),
-    dmgUrl: stable ? STABLE_DMG_URL : (dmg?.browser_download_url ?? `${RELEASES_URL}/latest`),
     dmgBytes: dmg?.size ?? null,
   };
 }
