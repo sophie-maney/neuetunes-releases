@@ -24,7 +24,6 @@ import openAnyway from '../assets/install/open-anyway-confirm.webp';
 
 const releases = await fetchReleases(3);
 const latest = releases[0];
-const dmgUrl = latest?.dmgUrl ?? STABLE_DMG_URL;
 const size = formatSize(latest?.dmgBytes ?? null);
 
 const lcdTitle = latest ? `neueTunes ${latest.version}` : 'neueTunes';
@@ -88,7 +87,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
           <li><a href="#features">What’s in it</a></li>
           <li><a href="#releases">What’s changed</a></li>
           <li><a href="#install">Opening it the first time</a></li>
-          <li><a class="aqua" href={dmgUrl} data-dmg>Download</a></li>
+          <li><a class="aqua" href={STABLE_DMG_URL}>Download</a></li>
         </ul>
       </nav>
     </div>
@@ -98,7 +97,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
     <section class="wrap panel hero" aria-labelledby="hero-title">
       <aside class="download">
         <Lcd title={lcdTitle} lines={lcdLines} />
-        <a class="aqua big" href={dmgUrl} data-dmg>
+        <a class="aqua big" href={STABLE_DMG_URL}>
           Download Now
           <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#fff" /><path d="M10 4.5v8M6.2 9.2 10 13l3.8-3.8" fill="none" stroke="#1d63cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </a>
@@ -270,7 +269,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
         <p class="promo-name">neueTunes <span data-version>{latest?.version}</span></p>
         <p>Free for Mac. macOS 26 or later.</p>
       </div>
-      <a class="aqua big" href={dmgUrl} data-dmg>
+      <a class="aqua big" href={STABLE_DMG_URL}>
         Download
         <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#fff" /><path d="M10 4.5v8M6.2 9.2 10 13l3.8-3.8" fill="none" stroke="#1d63cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
       </a>
@@ -288,7 +287,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
 </Base>
 
 <script>
-  import { STABLE_DMG, STABLE_DMG_URL, REPO } from '../lib/releases';
+  import { STABLE_DMG, REPO } from '../lib/releases';
 
   // Browse gallery: the thumbnails switch the big screenshot, like apple.com's galleries did.
   const buttons = document.querySelectorAll<HTMLButtonElement>('.gallery button');
@@ -302,7 +301,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
     });
   });
 
-  // A release made after this deploy: point the buttons and the LCD at it.
+  // A release made after this deploy: show its version, date, and size.
   fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } })
     .then((res) => (res.ok ? res.json() : null))
     .then((release) => {
@@ -311,17 +310,13 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
       const title = document.querySelector('[data-lcd-title]');
       if (!title || title.textContent === `neueTunes ${version}`) return;
       const assets: { name: string; size: number; browser_download_url: string }[] = release.assets ?? [];
-      const stable = assets.find((a) => a.name === STABLE_DMG);
-      const dmg = stable ?? assets.find((a) => a.name.endsWith('.dmg'));
-      if (!dmg) return;
-      const url = stable ? STABLE_DMG_URL : dmg.browser_download_url;
-      document.querySelectorAll<HTMLAnchorElement>('[data-dmg]').forEach((a) => (a.href = url));
+      const dmg = assets.find((a) => a.name === STABLE_DMG) ?? assets.find((a) => a.name.endsWith('.dmg'));
       document.querySelectorAll('[data-version]').forEach((el) => (el.textContent = version));
       title.textContent = `neueTunes ${version}`;
       const date = new Date(release.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
       const lines = document.querySelectorAll('[data-lcd-line]');
       if (lines[0]) lines[0].textContent = `Released ${date}`;
-      if (lines[1]) lines[1].textContent = `Free download, ${Math.round(dmg.size / 1_000_000)} MB`;
+      if (lines[1]) lines[1].textContent = dmg ? `Free download, ${Math.round(dmg.size / 1_000_000)} MB` : 'Free download';
     })
     .catch(() => {});
 </script>
