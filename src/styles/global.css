@@ -1,5 +1,5 @@
 /* neueTunes site: the apple.com iTunes 8 pages (September 2008), redrawn.
-   Graphite nav, white panels, Aqua buttons, the cream LCD, a dark "this week" band. */
+   White panels, Aqua buttons, the cream LCD, a dark "this week" band. */
 
 :root {
   --font: 'Source Sans 3 Variable', 'Source Sans 3', 'Lucida Grande', system-ui, sans-serif;
@@ -12,12 +12,6 @@
   --text: #333333;
   --muted: #666666;
   --link: #0066b3;
-
-  --nav-top: #c9c9c9;
-  --nav-mid: #a3a3a3;
-  --nav-bottom: #8a8a8a;
-  --nav-rule: #7b7b7b;
-  --nav-text: #2b2b2b;
 
   --aqua-top: #8ec2ff;
   --aqua-mid: #3d8ff0;
@@ -56,12 +50,6 @@
     --text: #dcdcdc;
     --muted: #a6a6a6;
     --link: #6cb4ff;
-
-    --nav-top: #5c5c5c;
-    --nav-mid: #444444;
-    --nav-bottom: #353535;
-    --nav-rule: #2a2a2a;
-    --nav-text: #ececec;
 
     --lcd-top: #34362b;
     --lcd-bottom: #23241c;
@@ -146,56 +134,20 @@ code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.86em
 .aqua:active { filter: brightness(0.92); }
 .aqua svg { flex: none; width: 1.05em; height: 1.05em; }
 
-/* ---------- Global nav: the graphite tab bar ---------- */
-
-.globalnav { padding-top: 22px; }
-.globalnav ul {
-  display: flex; margin: 0; padding: 0; list-style: none;
-  border: 1px solid var(--nav-rule); border-radius: 5px; overflow: hidden;
-  background:
-    linear-gradient(rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.05) 50%, transparent 50%),
-    linear-gradient(var(--nav-top), var(--nav-mid) 50%, var(--nav-bottom));
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
-}
-.globalnav li { flex: 1 1 0; min-width: max-content; }
-.globalnav li + li { border-left: 1px solid rgb(0 0 0 / 0.18); box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.28); }
-.globalnav a {
-  display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 18px;
-  color: var(--nav-text); font-size: 15px; font-weight: 600;
-  text-shadow: 0 1px 0 rgb(255 255 255 / 0.45);
-}
-.globalnav a:hover { text-decoration: none; background: rgb(255 255 255 / 0.12); }
-.globalnav a[aria-current] {
-  color: #fff; text-shadow: 0 -1px 0 rgb(0 0 0 / 0.45);
-  background: linear-gradient(#6d6d6d, #545454 50%, #4a4a4a);
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.4);
-}
-.globalnav .home { flex: 0 0 auto; }
-.globalnav .home a { padding: 0 26px; }
-.globalnav .home img { width: 24px; height: 24px; filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.4)); }
-
-@media (prefers-color-scheme: dark) {
-  .globalnav a { text-shadow: 0 -1px 0 rgb(0 0 0 / 0.5); }
-  .globalnav li + li { box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.08); }
-  .globalnav a[aria-current] { background: linear-gradient(#262626, #1b1b1b); }
-}
-
-@media (max-width: 760px) {
-  .globalnav ul { overflow-x: auto; scrollbar-width: none; }
-  .globalnav a { padding: 0 14px; font-size: 14px; }
-  .globalnav .home a { padding: 0 16px; }
-}
-
 /* ---------- Product header: name left, local nav right ---------- */
 
 .productheader {
-  display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap;
-  padding: 26px 4px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap;
+  padding: 32px 4px 14px;
 }
-.productheader .name { font-size: 34px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; line-height: 1; }
+.productheader .name {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 34px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; line-height: 1;
+}
+.productheader .name img { width: 44px; height: 44px; }
 .productheader nav ul { display: flex; align-items: center; gap: 4px 26px; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
 .productheader nav a { color: var(--text); font-size: 15px; }
-.productheader nav .aqua { min-height: 30px; padding: 0 14px; font-size: 14px; border-radius: 15px; }
+.productheader nav .aqua { min-height: 30px; padding: 0 14px; font-size: 14px; border-radius: 15px; color: #fff; }
 
 @media (max-width: 760px) {
   .productheader nav li:not(:last-child) { display: none; }
