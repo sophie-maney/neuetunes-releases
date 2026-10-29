@@ -1,0 +1,202 @@
+/* neueTunes site: the apple.com iTunes 8 pages (September 2008), redrawn.
+   Graphite nav, white panels, Aqua buttons, the cream LCD, a dark "this week" band. */
+
+:root {
+  --font: 'Source Sans 3 Variable', 'Source Sans 3', 'Lucida Grande', system-ui, sans-serif;
+
+  --page: #ffffff;
+  --panel: #ffffff;
+  --panel-rule: #d4d4d4;
+  --panel-shade: #ececec;
+  --ink: #000000;
+  --text: #333333;
+  --muted: #666666;
+  --link: #0066b3;
+
+  --nav-top: #c9c9c9;
+  --nav-mid: #a3a3a3;
+  --nav-bottom: #8a8a8a;
+  --nav-rule: #7b7b7b;
+  --nav-text: #2b2b2b;
+
+  --aqua-top: #8ec2ff;
+  --aqua-mid: #3d8ff0;
+  --aqua-bottom: #1559c7;
+  --aqua-edge: #12479c;
+
+  --lcd-top: #fbfde6;
+  --lcd-bottom: #d7dbc1;
+  --lcd-edge: #55584c;
+  --lcd-ink: #2f3126;
+  --lcd-muted: #63665a;
+
+  --band: #3b3b3b;
+  --band-deep: #2a2a2a;
+  --band-card: #474747;
+  --band-text: #e8e8e8;
+  --band-muted: #b3b3b3;
+
+  --ribbon-top: #ffa531;
+  --ribbon-bottom: #ee6c0c;
+
+  --shot-shadow: drop-shadow(0 14px 22px rgb(0 0 0 / 0.22)) drop-shadow(0 2px 4px rgb(0 0 0 / 0.18));
+
+  --measure: 34em;
+  --wrap: 1060px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #262626;
+    --panel: #333333;
+    --panel-rule: #4a4a4a;
+    --panel-shade: #2b2b2b;
+    --ink: #f2f2f2;
+    --text: #dcdcdc;
+    --muted: #a6a6a6;
+    --link: #6cb4ff;
+
+    --nav-top: #5c5c5c;
+    --nav-mid: #444444;
+    --nav-bottom: #353535;
+    --nav-rule: #2a2a2a;
+    --nav-text: #ececec;
+
+    --lcd-top: #34362b;
+    --lcd-bottom: #23241c;
+    --lcd-edge: #0e0f0b;
+    --lcd-ink: #eef1d6;
+    --lcd-muted: #b9bca4;
+
+    --band: #1f1f1f;
+    --band-deep: #171717;
+    --band-card: #2e2e2e;
+
+    --shot-shadow: drop-shadow(0 14px 24px rgb(0 0 0 / 0.5)) drop-shadow(0 2px 4px rgb(0 0 0 / 0.4));
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font: 400 17px/1.55 var(--font);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+picture { display: block; }
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible { outline: 3px solid #4a9bf0; outline-offset: 2px; border-radius: 4px; }
+
+h1, h2, h3, h4 { color: var(--ink); margin: 0; font-weight: 600; line-height: 1.2; }
+p { margin: 0; }
+p + p { margin-top: 0.8em; }
+
+.wrap { width: min(var(--wrap), 100% - 32px); margin-inline: auto; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+kbd {
+  font: inherit; font-size: 0.88em; padding: 0 0.3em; border-radius: 4px;
+  border: 1px solid var(--panel-rule); background: var(--panel-shade);
+}
+
+code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.86em; }
+
+/* ---------- Panels: white sheets with a hairline and a soft shade at the foot ---------- */
+
+.panel {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--panel-rule);
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 18px -12px rgb(0 0 0 / 0.25);
+}
+
+/* ---------- Glossy Aqua button ---------- */
+
+.aqua {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
+  padding: 0 1.1em; min-height: 2.6em;
+  border: 1px solid var(--aqua-edge); border-radius: 7px;
+  color: #fff; font-weight: 600; letter-spacing: 0.005em;
+  text-shadow: 0 -1px 0 rgb(0 0 0 / 0.35);
+  background:
+    linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.12) 50%, transparent 50%),
+    linear-gradient(var(--aqua-top), var(--aqua-mid) 48%, var(--aqua-bottom));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5), 0 1px 2px rgb(0 0 0 / 0.3);
+  cursor: pointer;
+}
+.aqua:hover { text-decoration: none; filter: brightness(1.06); }
+.aqua:active { filter: brightness(0.92); }
+.aqua svg { flex: none; width: 1.05em; height: 1.05em; }
+
+/* ---------- Global nav: the graphite tab bar ---------- */
+
+.globalnav { padding-top: 22px; }
+.globalnav ul {
+  display: flex; margin: 0; padding: 0; list-style: none;
+  border: 1px solid var(--nav-rule); border-radius: 5px; overflow: hidden;
+  background:
+    linear-gradient(rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.05) 50%, transparent 50%),
+    linear-gradient(var(--nav-top), var(--nav-mid) 50%, var(--nav-bottom));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+}
+.globalnav li { flex: 1 1 0; min-width: max-content; }
+.globalnav li + li { border-left: 1px solid rgb(0 0 0 / 0.18); box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.28); }
+.globalnav a {
+  display: flex; align-items: center; justify-content: center; height: 38px; padding: 0 18px;
+  color: var(--nav-text); font-size: 15px; font-weight: 600;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.45);
+}
+.globalnav a:hover { text-decoration: none; background: rgb(255 255 255 / 0.12); }
+.globalnav a[aria-current] {
+  color: #fff; text-shadow: 0 -1px 0 rgb(0 0 0 / 0.45);
+  background: linear-gradient(#6d6d6d, #545454 50%, #4a4a4a);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.4);
+}
+.globalnav .home { flex: 0 0 auto; }
+.globalnav .home a { padding: 0 26px; }
+.globalnav .home img { width: 24px; height: 24px; filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.4)); }
+
+@media (prefers-color-scheme: dark) {
+  .globalnav a { text-shadow: 0 -1px 0 rgb(0 0 0 / 0.5); }
+  .globalnav li + li { box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.08); }
+  .globalnav a[aria-current] { background: linear-gradient(#262626, #1b1b1b); }
+}
+
+@media (max-width: 760px) {
+  .globalnav ul { overflow-x: auto; scrollbar-width: none; }
+  .globalnav a { padding: 0 14px; font-size: 14px; }
+  .globalnav .home a { padding: 0 16px; }
+}
+
+/* ---------- Product header: name left, local nav right ---------- */
+
+.productheader {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap;
+  padding: 26px 4px 14px;
+}
+.productheader .name { font-size: 34px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; line-height: 1; }
+.productheader nav ul { display: flex; align-items: center; gap: 4px 26px; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
+.productheader nav a { color: var(--text); font-size: 15px; }
+.productheader nav .aqua { min-height: 30px; padding: 0 14px; font-size: 14px; border-radius: 15px; }
+
+@media (max-width: 760px) {
+  .productheader nav li:not(:last-child) { display: none; }
+}
