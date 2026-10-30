@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Lcd from '../components/Lcd.astro';
 import Shot from '../components/Shot.astro';
 import { Image } from 'astro:assets';
-import { fetchReleases, formatDate, formatSize, RELEASES_URL, STABLE_DMG_URL } from '../lib/releases';
+import { fetchReleases, formatDate, formatSize, NOTES_SHOWN, RELEASES_URL, STABLE_DMG_URL } from '../lib/releases';
 
 import icon from '../assets/icon.png';
 import gridLight from '../assets/shots/grid-light.webp';
@@ -226,7 +226,8 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
             <li>
               <h3><a href={r.url}>neueTunes {r.version}</a>{i === 0 && <span class="badge">Latest</span>}</h3>
               <p class="date"><time datetime={r.date}>{formatDate(r.date)}</time></p>
-              <ul>{r.notes.map((n) => <li>{n}</li>)}</ul>
+              <ul>{r.notes.slice(0, NOTES_SHOWN).map((n) => <li>{n}</li>)}</ul>
+              {r.notes.length > NOTES_SHOWN && <p class="read-more"><a href={r.url}>… Read more</a></p>}
             </li>
           ))}
         </ol>
@@ -240,6 +241,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
             <h3><a></a><span class="badge">Latest</span></h3>
             <p class="date"><time></time></p>
             <ul><li></li></ul>
+            <p class="read-more"><a>… Read more</a></p>
           </li>
         </ol>
       </template>
@@ -286,7 +288,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
 </Base>
 
 <script>
-  import { formatDate, formatSize, publishedReleases, REPO, type GitHubRelease, type Release } from '../lib/releases';
+  import { formatDate, formatSize, NOTES_SHOWN, publishedReleases, REPO, type GitHubRelease, type Release } from '../lib/releases';
 
   // Browse gallery: the thumbnails switch the big screenshot, like apple.com's galleries did.
   const buttons = document.querySelectorAll<HTMLButtonElement>('.gallery button');
@@ -331,11 +333,14 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
       time.textContent = formatDate(r.date);
       const notes = card.querySelector('ul')!;
       const blankNote = notes.firstElementChild!;
-      notes.replaceChildren(...r.notes.map((text) => {
+      notes.replaceChildren(...r.notes.slice(0, NOTES_SHOWN).map((text) => {
         const note = blankNote.cloneNode() as HTMLElement;
         note.textContent = text;
         return note;
       }));
+      const readMore = card.querySelector('.read-more')!;
+      if (r.notes.length > NOTES_SHOWN) readMore.querySelector('a')!.href = r.url;
+      else readMore.remove();
       list.append(card);
     }
     current.replaceWith(list);
@@ -521,6 +526,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
   .date { color: var(--band-muted); font-size: 14px; margin-top: 2px; }
   .cards ul { margin: 12px 0 0; padding-left: 1.1em; list-style: disc; }
   .cards ul li + li { margin-top: 4px; }
+  .read-more { margin-top: 8px; padding-left: 1.1em; font-weight: 600; }
   .empty { padding: 22px 26px 0; }
 
   /* ---------- Install steps ---------- */

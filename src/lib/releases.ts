@@ -8,6 +8,8 @@ export const RELEASES_URL = `https://github.com/${REPO}/releases`;
 // download buttons always point at the latest release's copy.
 export const STABLE_DMG = 'neueTunes.dmg';
 export const STABLE_DMG_URL = `${RELEASES_URL}/latest/download/${STABLE_DMG}`;
+// Each release card shows this many notes, then links to the release for the rest.
+export const NOTES_SHOWN = 3;
 
 export interface Release {
   version: string;
