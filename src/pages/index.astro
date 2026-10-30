@@ -233,6 +233,16 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
       ) : (
         <p class="empty">Release notes for every version are on <a href={RELEASES_URL}>GitHub</a>.</p>
       )}
+      {/* The script fills copies of this with releases made after this deploy. */}
+      <template data-release-cards>
+        <ol class="cards">
+          <li>
+            <h3><a></a><span class="badge">Latest</span></h3>
+            <p class="date"><time></time></p>
+            <ul><li></li></ul>
+          </li>
+        </ol>
+      </template>
     </section>
 
     <section class="wrap panel install" id="install" aria-labelledby="install-title">
@@ -276,7 +286,7 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
 </Base>
 
 <script>
-  import { STABLE_DMG, REPO } from '../lib/releases';
+  import { formatDate, formatSize, publishedReleases, REPO, type GitHubRelease, type Release } from '../lib/releases';
 
   // Browse gallery: the thumbnails switch the big screenshot, like apple.com's galleries did.
   const buttons = document.querySelectorAll<HTMLButtonElement>('.gallery button');
@@ -290,22 +300,54 @@ const description = 'neueTunes is iTunes 8 rebuilt for today’s Mac: your music
     });
   });
 
-  // A release made after this deploy: show its version, date, and size.
-  fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } })
+  // Releases made, or notes edited, after this deploy: show the latest version, date, and size,
+  // and redraw the release notes from the same template the build used.
+  function showLatest(latest: Release) {
+    document.querySelectorAll('[data-version]').forEach((el) => (el.textContent = latest.version));
+    const title = document.querySelector('[data-lcd-title]');
+    if (title) title.textContent = `neueTunes ${latest.version}`;
+    const size = formatSize(latest.dmgBytes);
+    const lines = document.querySelectorAll('[data-lcd-line]');
+    if (lines[0]) lines[0].textContent = `Released ${formatDate(latest.date)}`;
+    if (lines[1]) lines[1].textContent = size ? `Free download, ${size}` : 'Free download';
+  }
+
+  function showNotes(releases: Release[]) {
+    const template = document.querySelector<HTMLTemplateElement>('template[data-release-cards]');
+    const current = document.querySelector('#releases .cards, #releases .empty');
+    if (!template || !current) return;
+    // Cloning keeps Astro's scoped-style attributes, which elements made from scratch would lack.
+    const list = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    const blankCard = list.firstElementChild!;
+    blankCard.remove();
+    for (const [i, r] of releases.entries()) {
+      const card = blankCard.cloneNode(true) as HTMLElement;
+      const link = card.querySelector('a')!;
+      link.href = r.url;
+      link.textContent = `neueTunes ${r.version}`;
+      if (i > 0) card.querySelector('.badge')!.remove();
+      const time = card.querySelector('time')!;
+      time.dateTime = r.date;
+      time.textContent = formatDate(r.date);
+      const notes = card.querySelector('ul')!;
+      const blankNote = notes.firstElementChild!;
+      notes.replaceChildren(...r.notes.map((text) => {
+        const note = blankNote.cloneNode() as HTMLElement;
+        note.textContent = text;
+        return note;
+      }));
+      list.append(card);
+    }
+    current.replaceWith(list);
+  }
+
+  fetch(`https://api.github.com/repos/${REPO}/releases?per_page=5`, { headers: { Accept: 'application/vnd.github+json' } })
     .then((res) => (res.ok ? res.json() : null))
-    .then((release) => {
-      if (!release) return;
-      const version = String(release.tag_name).replace(/^v/, '');
-      const title = document.querySelector('[data-lcd-title]');
-      if (!title || title.textContent === `neueTunes ${version}`) return;
-      const assets: { name: string; size: number; browser_download_url: string }[] = release.assets ?? [];
-      const dmg = assets.find((a) => a.name === STABLE_DMG) ?? assets.find((a) => a.name.endsWith('.dmg'));
-      document.querySelectorAll('[data-version]').forEach((el) => (el.textContent = version));
-      title.textContent = `neueTunes ${version}`;
-      const date = new Date(release.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-      const lines = document.querySelectorAll('[data-lcd-line]');
-      if (lines[0]) lines[0].textContent = `Released ${date}`;
-      if (lines[1]) lines[1].textContent = dmg ? `Free download, ${Math.round(dmg.size / 1_000_000)} MB` : 'Free download';
+    .then((all: GitHubRelease[] | null) => {
+      const releases = publishedReleases(all ?? [], 3);
+      if (releases.length === 0) return;
+      showLatest(releases[0]);
+      showNotes(releases);
     })
     .catch(() => {});
 </script>
