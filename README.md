@@ -15,5 +15,5 @@ npm run build   # static output in dist/
 ```
 
 - Download buttons point at `releases/latest/download/neueTunes.dmg`, which the app repo's `scripts/release.sh` uploads with every release, so they never go stale between deploys.
-- Version, date, and release notes come from the GitHub API at build time, and the page refreshes the latest version in the browser, so a new release shows before the next deploy. Set `GITHUB_TOKEN` in Vercel if builds hit the API's rate limit.
+- Version, date, and release notes come from the GitHub API at build time, and the page reads them again in the browser, so a new release and its notes show before the next deploy. Set `GITHUB_TOKEN` in Vercel if builds hit the API's rate limit.
 - Screenshots in `src/assets/shots` are real captures of the app, light and dark (`-Appearance light|dark`); the page swaps them with the system appearance. Install screenshots come from the app repo's `assets/install-guide`.
